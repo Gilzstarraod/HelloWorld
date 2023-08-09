@@ -6,8 +6,12 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
-	
 <body>
-	<h1>시작페이지 입니다</h1>
+	<div>
+		<div><h1>Welcome To My Website</h1></div>
+		<div>
+			<img src="img/paris.jpg">
+		</div>
+	</div>
 </body>
 </html>

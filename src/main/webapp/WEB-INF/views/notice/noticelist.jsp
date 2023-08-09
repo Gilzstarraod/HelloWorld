@@ -13,15 +13,16 @@
 			<h1>게시판 목록 보기</h1>
 		</div>
 		<div>
-			<form id=frm method="post">
+			<form id=searchfrm>
 				<select id="key" name="key">
 					<option value="title">제목</option>
 					<option value="subject">내용</option>
 					<option value="writer">작성자</option>
-				</select> <input type="text" id="val" name="val"> <input
-					type="button" value="검색" onclick="search">
+				</select> 
+				<input type="text" id="val" name="val">
+				<input type="button" value="검색" onclick="searchList()">
 			</form>
-		</div>
+		</div><br>
 		<div>
 			<table border="1">
 				<thead>
@@ -42,10 +43,10 @@
 								onclick="selectNotice('${n.noticeId}')"
 							>
 								<td align="center">${n.noticeId}</td>
-								<td align="center">${n.noticeTitle}</td>
+								<td>${n.noticeTitle}</td>
 								<td align="center">${n.noticeWriter}</td>
 								<td align="center">${n.noticeDate}</td>
-								<td align="center">${n.noticeAttech}</td>
+								<td>${n.noticeAttech}</td>
 								<td align="center">${n.noticeHit}</td>
 							</tr>
 						</c:forEach>
@@ -73,6 +74,42 @@
 			document.getElementById("noticeId").value = n;
 			document.getElementById("noticefrm").action = "noticeselect.do";
 			document.getElementById("noticefrm").submit();
+		}
+		
+		function searchList(){
+			//ajax를 이용해 검색결과 가져와 화면을 재구성
+			let key = document.getElementById("key").value;
+			let val = document.getElementById("val").value;
+			let payload = "key="+key+"&val="+val;
+			let url = "ajaxnoticesearch.do"
+			
+			fetch(url, {method:"POST", headers:{"content-Type":"application/x-www-form-urlencoded",}, body: payload})
+				.then(response => response.json())
+				.then(json => htmlConvert(json));
+		}
+		
+		function htmlConvert(datas){
+			document.querySelector('tbody').remove();
+			const tbody = document.createElement('tbody');
+			// tbody data 추가
+			tbody.innerHTML = datas.map(data => htmlView(data)).join(''); 
+			// table tbody 추가
+			document.querySelector('table').appendChild(tbody);
+		}
+		
+		function htmlView(data){
+			return `
+					<tr onmouseover='this.style.background="#fcecae"'
+						onmouseout='this.style.background="#FFFFFF"'
+						onclick="selectNotice(\${data.noticeId})">
+						<td align="center">\${data.noticeId}</td>
+						<td>\${data.noticeTitle}</td>
+						<td align="center">\${data.noticeWriter}</td>
+						<td align="center">\${data.noticeDate}</td>
+						<td>\${data.noticeAttech}</td>
+						<td align="center">\${data.noticeHit}</td>
+					</tr>
+				`
 		}
 	</script>
 </body>
