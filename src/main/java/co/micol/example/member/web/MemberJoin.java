@@ -30,7 +30,6 @@ public class MemberJoin extends HttpServlet {
 		
 		String saveDir = getServletContext().getRealPath("attech/member/"); // 리눅스 유닉스 / 로 windows \ 디렉토리 표시
 		int sizeLimit = 100*1024*1024;	
-		System.out.println(saveDir + "================");
 		MultipartRequest multi = new MultipartRequest(
 						request,
 						saveDir,
@@ -51,9 +50,9 @@ public class MemberJoin extends HttpServlet {
 		
 		int n = dao.memberInsert(vo);
 		if(n == 1) {
-			request.setAttribute("message", "회원가입이 정상처리되었다");
+			request.setAttribute("message", "회원가입 완료");
 		} else {
-			request.setAttribute("message", "회원가입이 실패했습니다");
+			request.setAttribute("message", "회원가입 실패");
 		}
 		
 		String viewName = "member/membermessage";
