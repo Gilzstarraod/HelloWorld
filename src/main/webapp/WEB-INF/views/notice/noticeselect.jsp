@@ -14,6 +14,7 @@
 	rel="stylesheet">
 
 <!-- Custom styles for this template-->
+<link href="./css/bootstrap.min.css" rel="stylesheet">
 <link href="./css/sb-admin-2.min.css" rel="stylesheet">
 <style>
 	.cheader .replyId {
@@ -26,6 +27,7 @@
 	}
 </style>
 <script	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script	src="./js/bootstrap.min.js"></script>
 </head>
 <body>
 	<div align="center">
@@ -66,6 +68,7 @@
 		</c:if>
 			<button type="button" onclick="location.href='noticelist.do'">목록</button>
 		</div>
+		<br>
 		<div>
 			<form id="frm" method="post">
 				<input type="hidden" id="noticeId" name="noticeId"
@@ -74,22 +77,68 @@
 		</div>
 	</div>
 
-	<div class="container-fluid">
-		<div class="reply">
-			<h3>댓글목록</h3>
-			<div class="col-lg-10">
-				<div class="card mb-4" style="display:none;">
-					<div class="cheader">
-						<div class="replyId"> 1 </div>
-						<div class="replyer"> user1 </div>
-					</div>
-					<div class="cbody">
-						댓글내용부분
-					</div>
+	<!-- 댓글부분. -->
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<i class="fa fa-comments fa-fw"></i>Reply
+					<button id='addReplyBtn' class='btn btn-primary btn-xs pull-right'>New Reply</button>
+				</div>
+				<div class="panel-body">
+					<ul class="chat">
+						<li class="left clearfix" data-rno="12" style="display:none;">
+							<div>
+								<div class="header">
+									<strong class="primary-font">user00</strong>
+									<small class="pull-right text-muted">2023-03-05 13:13</small>
+								</div>
+								<p>Good job!</p>
+							</div>
+						</li>
+					</ul>
+				</div>
+				<div class="panel-footer">
+	
 				</div>
 			</div>
 		</div>
 	</div>
+	<!-- end -->
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">Reply Modal</h4>
+				</div>
+				<div class="modal-body">
+					<div class='form-group'>
+						<label>Reply</label>
+						<input class='form-control' name='reply' value='New Reply!!!!'>
+					</div>
+					<div class='form-group'>
+						<label>Replyer</label>
+						<input class='form-control' name='replyer' value='replyer'>
+					</div>
+					<div class='form-group'>
+						<label>Reply Date</label>
+						<input class='form-control' name='replyDate' value='replyDate'>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button id='modalModBtn' type="button" class="btn btn-warning" data-dismiss="modal">Modify</button>
+					<button id='modalRemoveBtn' type="button" class="btn btn-danger">Remove</button>
+					<button id='modalRegisterBtn' type="button" class="btn btn-default">Register</button>
+					<button id='modalCloseBtn' type="button" class="btn btn-default">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
 
 
 	<script type="text/javascript">
@@ -106,21 +155,94 @@
 	<script type="text/javascript">
 		var noticeId = '<c:out value="${n.noticeId}" />';
 		console.log('notice: ', noticeId);
+						
+		var mils = Date.parse('');
+		var today = new Date(mils);
+		console.log(today.getFullYear());
 		
+				
 		var reply = new Reply();
 		
 		reply.replyList(noticeId, function(data){
 			console.log(data)
 			
 			for(let i = 0; i < data.length; i++){
-				let temp = $('div.card.mb-4').eq(0).clone();
+				let temp = $('.chat > li').eq(0).clone();
 				temp.css('display', 'block')
 				
-				temp.find('div.replyId').text(data[i].replyId);
-				temp.find('div.replyer').text(data[i].replyer);
-				temp.find('div.card-body').text(data[i].reply);
-				$('div.col-lg-10').append(temp);
+				temp.attr('data-rno', data[i].replyId);
+				temp.find('strong').text(data[i].replyer);
+				temp.find('small').text(reply.displayDateTime(data[i].replyDate));
+				temp.find('p').text(data[i].reply);
+				
+				$('.chat').append(temp);
 			}
+		})
+		
+		// 댓글등록화면
+		$('#addReplyBtn').on('click', function(){
+			// 수정, 삭제 버튼 숨김
+			$('#modalModBtn').hide();
+			$('#modalRemoveBtn').hide();
+			$('#modalRegisterBtn').show();
+			$('.modal').modal('show');
+		})
+		
+		// 댓글등록처리
+		$('#modalRegisterBtn').on('click', function () {
+			var content = $('input[name=reply]').val();
+			var replyer = $('input[name=replyer]').val();
+			var param = {
+				noticeId,
+				reply: content,
+				replyer
+			}
+			
+			reply.replyAdd(param, function(data){
+				console.log(data)
+			let temp = $('.chat > li').eq(0).clone();
+			temp.css('display', 'block')
+			
+			temp.attr('data-rno', data.data.replyId);
+			temp.find('strong').text(data.data.replyer);
+			temp.find('small').text(reply.displayDateTime(data.data.replyDate));
+			temp.find('p').text(data.data.reply);
+			
+			$('.chat').append(temp);
+			$('.modal').modal('hide');
+			});
+		})
+		
+		// 댓글수정삭제 화면
+		$('.chat').on('click', 'li', function(){
+			$('#modalModBtn').show();
+			$('#modalRemoveBtn').show();
+			$('#modalRegisterBtn').hide();
+			$('.modal').modal('show');
+			
+			var rno = $(this).attr('data-rno');
+			rno = $(this).data('rno')
+			
+			// data-rno = 1
+			reply.replySearch(rno, function(data){
+				console.log(data);
+			$('input[name=reply]').val(data.reply);
+			$('input[name=replyer]').val(data.replyer);
+			$('input[name=replyDate]').val(reply.displayDateTime(data.replyDate));
+			})
+			
+		})
+		$('#modalModBtn').on('click', function(){
+			var content = $('input[name=reply]').val();
+			var replyer = $('input[name=replyer]').val();
+			var param = {
+				reply: content,
+				replyer
+			}
+			reply.replyModify(param, function(data){
+				console.log(data)
+			
+			})
 		})
 	</script>
 </body>
