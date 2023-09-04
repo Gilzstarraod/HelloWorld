@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="co.micol.example.notice.mapper.ReplyMapper">
+
+	<insert id="insert" parameterType="co.micol.example.notice.service.ReplyVO">
+		<selectKey resultType="co.micol.example.notice.service.ReplyVO" keyProperty="replyId,replyDate" order="BEFORE">
+			select seq_reply.nextval as replyId, sysdate as replyDate from dual
+		</selectKey>
+		INSERT INTO REPLY
+		VALUES(#{replyId}, #{noticeId}, #{reply}, #{replyer}, #{replyDate})
+	</insert>
+	
+	<select id="replyList" resultType="co.micol.example.notice.service.ReplyVO">
+		SELECT * FROM REPLY
+		WHERE NOTICE_ID = #{noticeId}
+		ORDER BY REPLY_ID DESC
+	</select>
+	
+	<select id="select" resultType="co.micol.example.notice.service.ReplyVO">
+		SELECT * FROM REPLY WHERE REPLY_ID = #{replyId}
+	</select>
+	
+	<delete id="delete" parameterType="co.micol.example.notice.service.ReplyVO">
+		SELECT * FROM REPLY WHERE REPLY_ID = #{replyId}
+	</delete>
+	
+	<update id="update" parameterType="co.micol.example.notice.service.ReplyVO">
+		UPDATE REPLY
+		<set>
+			<if test="reply != null"> REPLY = #{reply}, </if>
+			<if test="replyer != null"> REPLYER = #{replyer}, </if>
+			<if test="noticeId != null"> NOTICE_ID = #{noticeId}, </if>
+			<if test="replyDate != null"> REPLY_DATE = #{replyDate}</if>
+		</set> 
+		WHERE REPLY_ID = #{replyId}
+	</update>
+	
+</mapper>

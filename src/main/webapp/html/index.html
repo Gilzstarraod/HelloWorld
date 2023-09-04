@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<title>jQuery Filtering</title>
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<script>
+		$(function() {
+			$("button").on("click", function() {
+				$("li").filter(":odd")						// 선택한 <li>요소 중에서 인덱스가 홀수인 요소만을 선택함.
+					.css({"border": "2px solid green"});	// 해당 요소의 CSS 스타일을 변경함.
+			});
+		});
+	</script>
+</head>
+
+<body>
+
+	<h1>.filter() 메소드</h1>
+	<ul>
+		<li>첫 번째 아이템이에요!</li>
+		<li>두 번째 아이템이에요!</li>
+		<li>세 번째 아이템이에요!</li>
+		<li>네 번째 아이템이에요!</li>
+	</ul>
+	<p>제이쿼리에서 인덱스는 언제나 0부터 시작합니다!!</p>
+	<button>인덱스가 홀수인 요소</button>
+	
+</body>
+
+</html>
