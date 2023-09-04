@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="co.micol.example.ajax.mapper.ToDoMapper">
+	
+	<insert id="insert">
+		INSERT INTO TODO VALUES(#{num}, #{todo}, #{duedate}, #{complete}) 
+	</insert>
+	
+	<update id="update">
+		UPDATE TODO
+		<set>
+			<if test="todo != null">TODO = #{todo},</if> 
+			<if test="duedate != null">DUEDATE = #{duedate},</if>
+			<if test="complete != null">complete = #{complete}</if>
+		</set>
+		WHERE NUM = #{num}
+	</update>
+	
+	<delete id="delete">
+		DELETE FROM TODO WHERE NUM = #{num}
+	</delete>
+	
+	<select id="list">
+		SELECT * FROM TODO ORDER BY NUM
+	</select>
+	
+</mapper>
